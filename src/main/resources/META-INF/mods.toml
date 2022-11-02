@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[41,)"
+license="MIT License"
+[[mods]]
+modId="elytra_bar"
+version="${file.jarVersion}"
+displayName="Elytra Bar"
+logoFile=""
+credits="u/Fettstein for the original idea"
+authors="Fotatata"
+description='''
+This mod adds an Elytra durability bar, similar to the armor bar, showing how much durability your elytra has.
+No more hardcore deaths from fall damage!
+'''
+[[dependencies.elytra_bar]]
+    modId="forge"
+    mandatory=true
+    versionRange="[41,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.elytra_bar]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19,1.20)"
+    ordering="NONE"
+    side="BOTH"
