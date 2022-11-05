@@ -21,7 +21,7 @@ public class ElytraBar {
 
         modEventBus.addListener(this::commonSetup);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "elytrabar-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "elytra_bar-client.toml");
 
         MinecraftForge.EVENT_BUS.register(this);
     }
