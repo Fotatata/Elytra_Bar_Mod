@@ -1,5 +1,6 @@
 package com.fotatata.elytra_bar.bar;
 
+import com.fotatata.elytra_bar.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -13,13 +14,29 @@ public class DataHandler {
         return Minecraft.getInstance().player;
     }
 
-    public static int getElytraDurability(){
+    public static int getElytraDurability() {
         int ElytraDurability = 0;
         if (IsWearingElytra()) {
-            ElytraDurability = ((int) Math.round((432 - (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue())) / 21.6));
-        }
-        if (IsWearingElytra() && getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue() <= 430 && ElytraDurability == 0){
-            ElytraDurability = 1;
+            switch (ClientConfig.OVERLAY_TYPE.get()) {
+                case 0 -> {
+                    ElytraDurability = ((int) Math.round((432 - (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue())) / 21.6));
+                    if (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue() <= 430 && ElytraDurability == 0) {
+                        ElytraDurability = 1;
+                    }
+                }
+                case 1 -> {
+                    ElytraDurability = ((int) Math.round((432 - (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue())) / (432.0 / 79.0)));
+                    if (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue() <= 430 && ElytraDurability == 0) {
+                        ElytraDurability = 1;
+                    }
+                }
+                case 2 -> {
+                    ElytraDurability = ((int) Math.round((432 - (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue())) / (432.0 / 69.0)));
+                    if (getPlayer().getItemBySlot(EquipmentSlot.CHEST).getDamageValue() <= 430 && ElytraDurability == 0) {
+                        ElytraDurability = 1;
+                    }
+                }
+            }
         }
         return ElytraDurability;
     }
