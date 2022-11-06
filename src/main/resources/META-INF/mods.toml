@@ -3,9 +3,9 @@ loaderVersion="[41,)"
 license="MIT License"
 [[mods]]
 modId="elytra_bar"
-version="2.2"
+version="5.0"
 displayName="Elytra Bar"
-logoFile=""
+logoFile="icon.png"
 credits="u/Fettstein for the original idea"
 authors="Fotatata"
 description='''
@@ -22,5 +22,11 @@ No more hardcore deaths from fall damage!
     modId="minecraft"
     mandatory=true
     versionRange="[1.19,1.20)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.elytra_bar]]
+    modId="curios"
+    mandatory=false
+    versionRange="[1.19.2-5.1.6.2,)"
     ordering="NONE"
     side="BOTH"
