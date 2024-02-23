@@ -1,7 +1,7 @@
 package com.fotatata.elytra_bar.client;
 
 import com.fotatata.elytra_bar.ElytraBar;
-import com.fotatata.elytra_bar.bar.DataHandler;
+import com.fotatata.elytra_bar.data.DataHandler;
 import com.fotatata.elytra_bar.config.ClientConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -9,8 +9,9 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class ElytraHudOverlay implements IGuiOverlay {
-    private static final ResourceLocation ELYTRA_ICONS = new ResourceLocation(ElytraBar.ModId,"textures/bar/icons.png");
-
+    private int globalDurability;
+    private int tickCounter;
+    private static final ResourceLocation ELYTRA_ICONS = new ResourceLocation(ElytraBar.ModId,"textures/gui/icons.png");
     @Override
     public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
         int x = screenWidth/2;
@@ -23,7 +24,12 @@ public class ElytraHudOverlay implements IGuiOverlay {
         if (DataHandler.hasAbsorption()) {
             y -= 10;
         }
-
+        if (DataHandler.getPreciseDurability() > globalDurability && DataHandler.getPreciseDurability() % 2 == 0){
+            tickCounter = 10;
+        }
+        if (DataHandler.getPreciseDurability() < globalDurability){
+            tickCounter = -9;
+        }
         if (ClientConfig.ICON_TYPE.get()){
             v = 9;
         }else{
@@ -33,21 +39,21 @@ public class ElytraHudOverlay implements IGuiOverlay {
             switch (ClientConfig.OVERLAY_TYPE.get()) {
                 case 0 -> {
                     for (int i = 0; i < 10; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 91 + (i * 8), y + screenHeight - 49, 0, v, 9, 9,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 91 + (i * 8), y + screenHeight - 49 + elytraDamaged(i), elytraHealed(), v, 9, 9,32,32);
                     }
                     for (int i = 0; i < DataHandler.getElytraDurability() / 2; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 91 + (i * 8), y + screenHeight - 49, 9, v, 9, 9,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 91 + (i * 8), y + screenHeight - 49 + elytraDamaged(i), 9, v, 9, 9,32,32);
                     }
                     if ((DataHandler.getElytraDurability() % 2) == 1) {
-                        graphics.blit(ELYTRA_ICONS, x - 95 + (4 * DataHandler.getElytraDurability()), y + screenHeight - 49, 18, v, 9, 9,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 95 + (4 * DataHandler.getElytraDurability()), y + screenHeight - 49  + elytraDamaged((int)Math.floor(DataHandler.getElytraDurability()/2d)), 17, v, 6, 9,32,32);
                     }
                 }
                 case 1 -> {
                     for (int i = 0; i < 79; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 90 + i, y + screenHeight - 44, 1, 18, 1, 4,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 90 + i, y + screenHeight - 44, 1 + ((elytraHealed() != 0) ? 3 : 0), 18, 1, 4,32,32);
                     }
                     for (int i = 0; i < 2; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 91 + (i*80), y + screenHeight - 44, 0, 18, 1, 4,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 91 + (i*80), y + screenHeight - 44, (elytraHealed() != 0) ? 3 : 0, 18, 1, 4,32,32);
                     }
                     for (int i = 1; i < DataHandler.getElytraDurability(); i++) {
                         graphics.blit(ELYTRA_ICONS, x - 90 + i, y + screenHeight - 44, 3, 18, 1, 4,32,32);
@@ -57,16 +63,16 @@ public class ElytraHudOverlay implements IGuiOverlay {
                     }
                 }
                 case 2 -> {
-                    graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49, 0, v, 9 ,9,32,32);
+                    graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49 + elytraDamaged(0), elytraHealed(), v, 9 ,9,32,32);
                     if (DataHandler.getElytraDurability() >= 35)
-                        graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49, 9, v, 9, 9,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49 + elytraDamaged(0), 9, v, 9, 9,32,32);
                     if (DataHandler.getElytraDurability() >= 1 && DataHandler.getElytraDurability() <= 34)
-                        graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49, 18, v, 9, 9,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 91, y + screenHeight - 49 + elytraDamaged(0), 17, v, 6, 9,32,32);
                     for (int i = 0; i < 69; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 80 + i, y + screenHeight - 44, 1, 18, 1, 4,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 80 + i, y + screenHeight - 44, 1 + ((elytraHealed() != 0) ? 3 : 0), 18, 1, 4,32,32);
                     }
                     for (int i = 0; i < 2; i++) {
-                        graphics.blit(ELYTRA_ICONS, x - 81 + (i*70), y + screenHeight - 44, 0, 18, 1, 4,32,32);
+                        graphics.blit(ELYTRA_ICONS, x - 81 + (i*70), y + screenHeight - 44, (elytraHealed() != 0) ? 3 : 0, 18, 1, 4,32,32);
                     }
                     for (int i = 1; i < DataHandler.getElytraDurability(); i++) {
                         graphics.blit(ELYTRA_ICONS, x - 80 + i, y + screenHeight - 44, 3, 18, 1, 4,32,32);
@@ -77,5 +83,22 @@ public class ElytraHudOverlay implements IGuiOverlay {
                 }
             }
         }
+        this.globalDurability = DataHandler.getPreciseDurability();
+        if (tickCounter > 0) this.tickCounter--;
+        if (tickCounter < 0) this.tickCounter++;
+    }
+    protected int elytraHealed(){
+        if (this.tickCounter <= -7) return 23;
+        else if (this.tickCounter <= -4) return 0;
+        else if (this.tickCounter <= -1) return 23;
+        else return 0;
+    }
+    protected int elytraDamaged(int YPosition){
+        switch (tickCounter){
+            case 7, 3 -> {return (YPosition % 2 == 0) ? 1 : -1;}
+            case 9, 5, 1 -> {return (YPosition % 2 == 0) ? -1 : 1;}
+            default -> {return 0;}
+        }
     }
 }
+
