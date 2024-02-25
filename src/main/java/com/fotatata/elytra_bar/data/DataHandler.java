@@ -17,7 +17,6 @@ public class DataHandler {
 
     public static int getElytraDurability() {
         int iconAmount = 0;
-        System.out.println(CuriosApiMethods.getItemStack(getPlayer()));
         if (IsWearingElytra()) {
             switch (ClientConfig.OVERLAY_TYPE.get()) {
                 case 0 -> {
@@ -54,7 +53,7 @@ public class DataHandler {
     }
 
     public static boolean IsWearingElytra() {
-        return (ModList.get().isLoaded("curios") ? (CuriosApiMethods.checkCuriosElytra(getPlayer()) ? true : getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) : getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) &&
+        return (ModList.get().isLoaded("curios") ? (CuriosApiMethods.checkCuriosElytra(getPlayer()) || getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) : getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) &&
                 !(getPlayer().isCreative() || getPlayer().isSpectator());
     }
 }

@@ -3,20 +3,18 @@ package com.fotatata.elytra_bar.client;
 import com.fotatata.elytra_bar.ElytraBar;
 import com.fotatata.elytra_bar.data.DataHandler;
 import com.fotatata.elytra_bar.config.ClientConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class ElytraHudOverlay implements IGuiOverlay {
-    private int globalDurability;
-    private int tickCounter;
+    private int globalDurability, frameCounter, frameRate, frame;
     private static final ResourceLocation ELYTRA_ICONS = new ResourceLocation(ElytraBar.ModId,"textures/gui/icons.png");
     @Override
     public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
-        int x = screenWidth/2;
-        int y = 0;
-        int v;
+        int x = screenWidth/2, y = 0, v;
 
         if (DataHandler.isWearingArmor()) {
             y -= 10;
@@ -25,10 +23,14 @@ public class ElytraHudOverlay implements IGuiOverlay {
             y -= 10;
         }
         if (DataHandler.getPreciseDurability() > globalDurability && DataHandler.getPreciseDurability() % 2 == 0){
-            tickCounter = 10;
+            frameRate = Minecraft.getInstance().getFps();
+            frame = 0;
+            frameCounter = 10;
         }
         if (DataHandler.getPreciseDurability() < globalDurability){
-            tickCounter = -9;
+            frameRate = Minecraft.getInstance().getFps();
+            frame = 0;
+            frameCounter = -9;
         }
         if (ClientConfig.ICON_TYPE.get()){
             v = 9;
@@ -83,22 +85,22 @@ public class ElytraHudOverlay implements IGuiOverlay {
                 }
             }
         }
-        this.globalDurability = DataHandler.getPreciseDurability();
-        if (tickCounter > 0) this.tickCounter--;
-        if (tickCounter < 0) this.tickCounter++;
+        globalDurability = DataHandler.getPreciseDurability();
+        if (frameCounter > 0 && (int)(frame % (frameRate/30d)) == 0) frameCounter--;
+        if (frameCounter < 0 && (int)(frame % (frameRate/30d)) == 0) frameCounter++;
+        if (frame < frameRate) frame++;
     }
     protected int elytraHealed(){
-        if (this.tickCounter <= -7) return 23;
-        else if (this.tickCounter <= -4) return 0;
-        else if (this.tickCounter <= -1) return 23;
+        if (frameCounter <= -7) return 23;
+        else if (frameCounter <= -4) return 0;
+        else if (frameCounter <= -1) return 23;
         else return 0;
     }
     protected int elytraDamaged(int YPosition){
-        switch (tickCounter){
+        switch (frameCounter){
             case 7, 3 -> {return (YPosition % 2 == 0) ? 1 : -1;}
             case 9, 5, 1 -> {return (YPosition % 2 == 0) ? -1 : 1;}
             default -> {return 0;}
         }
     }
 }
-

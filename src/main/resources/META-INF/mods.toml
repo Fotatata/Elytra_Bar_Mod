@@ -3,7 +3,7 @@ loaderVersion="[41,)"
 license="MIT License"
 [[mods]]
 modId="elytra_bar"
-version="4.1"
+version="5.0"
 displayName="Elytra Bar"
 logoFile="icon.png"
 credits="u/Fettstein for the original idea"
