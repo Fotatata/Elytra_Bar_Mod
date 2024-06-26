@@ -24,12 +24,12 @@ public class ElytraHudOverlay {
             y -= 10;
         }
         if (DataHandler.getPreciseDurability() > globalDurability && DataHandler.getPreciseDurability() % 2 == 0) {
-            frameRate = (int)Minecraft.getInstance().getDeltaFrameTime();
+            frameRate = (int)Minecraft.getInstance().getFrameTime();
             frame = 0;
             frameCounter = 10;
         }
         if (DataHandler.getPreciseDurability() < globalDurability) {
-            frameRate = (int)Minecraft.getInstance().getDeltaFrameTime();
+            frameRate = (int)Minecraft.getInstance().getFrameTime();
             frame = 0;
             frameCounter = -9;
         }
