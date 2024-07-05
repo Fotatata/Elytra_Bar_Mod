@@ -53,7 +53,10 @@ public class DataHandler {
     }
 
     public static boolean IsWearingElytra() {
-        return (ModList.get().isLoaded("curios") ? (CuriosApiMethods.checkCuriosElytra(getPlayer()) || getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) : getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) &&
-                !(getPlayer().isCreative() || getPlayer().isSpectator());
+        if (getPlayer().isCreative() || getPlayer().isSpectator()) return false;
+
+        if (ModList.get().isLoaded("curios") && CuriosApiMethods.checkCuriosElytra(getPlayer())) return true;
+
+        return getPlayer().getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA;
     }
 }

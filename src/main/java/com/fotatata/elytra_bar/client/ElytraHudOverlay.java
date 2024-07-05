@@ -43,7 +43,6 @@ public class ElytraHudOverlay {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, ELYTRA_ICONS);
         if (DataHandler.IsWearingElytra()) {
-            System.out.println(frameRate);
             switch (ClientConfig.OVERLAY_TYPE.get()) {
                 case 0 -> {
                     for (int i = 0; i < 10; i++) {
