@@ -13,6 +13,10 @@ public class Config {
             .comment("Which durability indicator to use")
             .defineEnum("durabilityIndicator", Overlays.ICONS);
 
+public static final ModConfigSpec.IntValue HUD_OFFSET = BUILDER
+        .comment("Adjust this slider to change the height at which the HUD is rendered")
+        .defineInRange("",0,-10,50);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public enum Overlays{

@@ -21,14 +21,15 @@ import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber(modid = ElytraBar.MOD_ID, value = Dist.CLIENT)
 public class ElytraOverlay implements LayeredDraw.Layer {
-    private static Minecraft minecraft;
+    private static Minecraft MINECRAFT;
     private static ResourceLocation ELYTRA_EMPTY_ICON_SPRITE;
     private static ResourceLocation ELYTRA_HALF_ICON_SPRITE;
     private static ResourceLocation ELYTRA_FULL_ICON_SPRITE;
     private static ResourceLocation ELYTRA_BAR_FULL_SPRITE;
     private static ResourceLocation ELYTRA_BAR_EMPTY_SPRITE;
-    private static boolean wingSprites;
-    private static Config.Overlays overlayType;
+    private static boolean WING_SPRITES;
+    private static Config.Overlays OVERLAY_TYPE;
+    private static int HEIGHT;
     private final RandomSource random = RandomSource.create();
     private static int tickCount = 0;
     private double previousDurability;
@@ -36,15 +37,15 @@ public class ElytraOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
-        Player player = minecraft.getCameraEntity() instanceof Player dummy ? dummy : null;
+        Player player = MINECRAFT.getCameraEntity() instanceof Player dummy ? dummy : null;
         this.random.setSeed(tickCount);
         ItemStack elytraItem = maybeElytraItem(player);
         if (elytraItem.getItem() instanceof ElytraItem) {
             double durability = (elytraItem.getMaxDamage() - elytraItem.getDamageValue() - 1d) / (elytraItem.getMaxDamage() - 1d);
 
             String blinkString = (frame % 4 == 1 || frame % 4 == 2) ? "_blinking" : "";
-            String iconString = wingSprites ? "wings" : "elytra";
-            String barString = (overlayType != Config.Overlays.BAR) ? "long" : "short";
+            String iconString = WING_SPRITES ? "wings" : "elytra";
+            String barString = (OVERLAY_TYPE != Config.Overlays.BAR) ? "long" : "short";
             
             ELYTRA_EMPTY_ICON_SPRITE = ResourceLocation.fromNamespaceAndPath(ElytraBar.MOD_ID, "hud/" + iconString + "_empty" + blinkString);
             ELYTRA_HALF_ICON_SPRITE = ResourceLocation.fromNamespaceAndPath(ElytraBar.MOD_ID, "hud/" + iconString + "_half" + blinkString);
@@ -56,25 +57,26 @@ public class ElytraOverlay implements LayeredDraw.Layer {
             if (previousDurability > durability) frame = -3;
             if (previousDurability < durability) frame = 6;
 
-            switch (overlayType) {
+            switch (OVERLAY_TYPE) {
                 case Config.Overlays.BAR -> renderBar(guiGraphics, durability);
                 case Config.Overlays.BOTH -> renderMix(guiGraphics, durability);
                 default -> renderIcons(guiGraphics, durability);
             }
-            minecraft.gui.leftHeight += 10;
+            MINECRAFT.gui.leftHeight += 10;
             this.previousDurability = durability;
         }
     }
 
     public ElytraOverlay(){
-        minecraft = Minecraft.getInstance();
-        wingSprites = Config.WING_SPRITES.get();
-        overlayType = Config.DURABILITY_INDICATOR.get();
+        MINECRAFT = Minecraft.getInstance();
+        WING_SPRITES = Config.WING_SPRITES.get();
+        OVERLAY_TYPE = Config.DURABILITY_INDICATOR.get();
+        HEIGHT = Config.HUD_OFFSET.get();
     }
 
 
     private ItemStack maybeElytraItem(Player player){
-        if (player != null && minecraft.gameMode.canHurtPlayer()){
+        if (player != null && MINECRAFT.gameMode.canHurtPlayer()){
             if (ModList.get().isLoaded("elytraslot")) {
                 IItemHandler elytraHandler = player.getCapability(CuriosCompatibility.CURIOS_INVENTORY);
                 if (elytraHandler != null) {
@@ -89,7 +91,7 @@ public class ElytraOverlay implements LayeredDraw.Layer {
     }
 
     private void renderIcons(GuiGraphics guiGraphics, double durabilityPercentage){
-        int leftHeight = minecraft.gui.leftHeight;
+        int leftHeight = MINECRAFT.gui.leftHeight + HEIGHT;
         double durability = Math.ceil(durabilityPercentage * 20d);
         for (int i = 0; i < 10; i++) {
             int x = guiGraphics.guiWidth() / 2 - 91 + i * 8;
@@ -102,7 +104,7 @@ public class ElytraOverlay implements LayeredDraw.Layer {
     }
 
     private void renderBar(GuiGraphics guiGraphics, double durabilityPercentage){
-        int leftHeight = minecraft.gui.leftHeight;
+        int leftHeight = MINECRAFT.gui.leftHeight + HEIGHT;
         int durability = (int) Math.ceil(durabilityPercentage * 79d) + 1;
         int x = guiGraphics.guiWidth() / 2 - 91;
         int y = guiGraphics.guiHeight() - leftHeight + 5;
@@ -112,7 +114,7 @@ public class ElytraOverlay implements LayeredDraw.Layer {
     }
 
     private void renderMix(GuiGraphics guiGraphics, double durabilityPercentage){
-        int leftHeight = minecraft.gui.leftHeight;
+        int leftHeight = MINECRAFT.gui.leftHeight + HEIGHT;
         int durability = (int) Math.ceil(durabilityPercentage * 69d);
         int x = guiGraphics.guiWidth() / 2 - 81;
         int y = guiGraphics.guiHeight() - leftHeight + 5;
@@ -127,13 +129,14 @@ public class ElytraOverlay implements LayeredDraw.Layer {
 
     @SubscribeEvent
     static void updateConfig(ModConfigEvent.Reloading event){
-        wingSprites = Config.WING_SPRITES.get();
-        overlayType = Config.DURABILITY_INDICATOR.get();
+        WING_SPRITES = Config.WING_SPRITES.get();
+        OVERLAY_TYPE = Config.DURABILITY_INDICATOR.get();
+        HEIGHT = Config.HUD_OFFSET.get();
     }
 
     @SubscribeEvent
     static void tick(ClientTickEvent.Pre event){
-        if (!minecraft.isPaused()) tickCount++;
+        if (!MINECRAFT.isPaused()) tickCount++;
         if (tickCount > 1000) tickCount = 0;
         if (frame < 0) frame++;
         if (frame > 0) frame--;
